@@ -11,7 +11,7 @@ This module contains shared fixtures.
 @pytest.fixture(scope='session')
 def config():
 
-    with open('../config.json') as conf_file:
+    with open('config.json') as conf_file:
         config = json.load(conf_file)
 
     assert config["browser"] in ["chrome", "headless chrome", "edge"]
