@@ -39,3 +39,4 @@ def test_register_new_user_fail(browser, firstname, lastname, email, password):
     if password == '':
         assert register_page.get_password_error() == "This is a required field."
         assert register_page.get_password_confirmation_error() == "This is a required field."
+
