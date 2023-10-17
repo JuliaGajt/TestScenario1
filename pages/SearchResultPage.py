@@ -7,24 +7,24 @@ class SearchResultPage:
     no_results_information = (By.CSS_SELECTOR, "div[class*='notice'] > div")
     added_to_cart_message = (By.CSS_SELECTOR, "div[data-ui-id='message-success'] > div")
 
-    add_item_to_wish_list_button = """//a[contains(.,'')]/parent::*/following-sibling::div[@class='product-item-inner']
+    add_item_to_wish_list_button = """//a[contains(.,'%s')]/parent::*/following-sibling::div[@class='product-item-inner']
                                         //a[@title='Add to Wish List']"""
 
-    add_item_to_basket_button = """//a[contains(.,'')]/parent::*/following-sibling::div[@class='product-item-inner']
+    add_item_to_basket_button = """//a[contains(.,'%s')]/parent::*/following-sibling::div[@class='product-item-inner']
                                         //button[@title='Add to Cart']"""
 
-    item_name_card = "//a[contains(.,'')]/parent::*"
+    item_name_card = "//a[contains(.,'%s')]/parent::*"
 
-    select_size_of_item = """//a[contains(.,'')]/parent::*/following-sibling::div[contains(@class,'swatch-opt')]
-                                        //div[contains(@id,'option-label-size') and @option-label='']"""
+    select_size_of_item = """//a[contains(.,'%s')]/parent::*/following-sibling::div[contains(@class,'swatch-opt')]
+                                        //div[contains(@id,'option-label-size') and @option-label='%s']"""
 
-    select_color_of_item = """//a[contains(.,'')]/parent::*/following-sibling::div[contains(@class,'swatch-opt')]
-                                        //div[contains(@id,'option-label-color') and @option-label='']"""
+    select_color_of_item = """//a[contains(.,'%s')]/parent::*/following-sibling::div[contains(@class,'swatch-opt')]
+                                        //div[contains(@id,'option-label-color') and @option-label='%s']"""
 
     shopping_cart_link_product_added = (By.XPATH, "//a[.='shopping cart']")
 
     results_of_searching = (By.CSS_SELECTOR, "li[class='item product product-item']")
-    link_to_item_from_search_results = "img[class='product-image-photo'][alt='']"
+    link_to_item_from_search_results = "img[class='product-image-photo'][alt='%s']"
 
     def __init__(self, browser):
         self.browser = browser
@@ -49,43 +49,38 @@ class SearchResultPage:
 
     def add_item_to_wish_list(self, item):
 
-        item_name_element = self.browser.find_element(By.XPATH,
-                                                      self.item_name_card[:16] + item + self.item_name_card[16:])
+        item_name_element = self.browser.find_element(By.XPATH, self.item_name_card % item)
+
         ActionChains(self.browser).move_to_element(item_name_element).pause(2).perform()
         ActionChains(self.browser).reset_actions()
 
-        add_to_wish_list = self.browser.find_element(By.XPATH, self.add_item_to_wish_list_button[:16] + item +
-                                                     self.add_item_to_wish_list_button[16:])
+        add_to_wish_list = self.browser.find_element(By.XPATH, self.add_item_to_wish_list_button % item)
+
         ActionChains(self.browser).move_to_element(add_to_wish_list).pause(2).click().perform()
         ActionChains(self.browser).reset_actions()
 
     def add_item_to_basket(self, item, size, color):
 
         # move to products so they are visible
-        item_name_element = self.browser.find_element(By.XPATH,
-                                                      self.item_name_card[:16] + item + self.item_name_card[16:])
+        item_name_element = self.browser.find_element(By.XPATH, self.item_name_card % item)
         ActionChains(self.browser).move_to_element(item_name_element).pause(2).perform()
         ActionChains(self.browser).reset_actions()
 
         # select size of product
         if size != "":
-            size_button = self.browser.find_element(By.XPATH, self.select_size_of_item[:16] + item +
-                                                    self.select_size_of_item[16:-2] + size + self.select_size_of_item[-2:])
+            size_button = self.browser.find_element(By.XPATH, self.select_size_of_item % (item, size))
             ActionChains(self.browser).move_to_element(size_button).pause(2).click().perform()
             ActionChains(self.browser).reset_actions()
 
         # select color of product
         if color != "":
-            color_button = self.browser.find_element(By.XPATH,
-                                                     self.select_color_of_item[:16] + item + self.select_color_of_item
-                                                     [16:-2] + color + self.select_color_of_item[-2:])
+            color_button = self.browser.find_element(By.XPATH, self.select_color_of_item % (item, color))
 
             ActionChains(self.browser).move_to_element(color_button).pause(2).click().perform()
             ActionChains(self.browser).reset_actions()
 
         # add to basket
-        add_to_basket_button = self.browser.find_element(By.XPATH, self.add_item_to_basket_button[:16]
-                                                         + item + self.add_item_to_basket_button[16:])
+        add_to_basket_button = self.browser.find_element(By.XPATH, self.add_item_to_basket_button % item)
         ActionChains(self.browser).move_to_element(add_to_basket_button).pause(2).click().perform()
 
         self.browser.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.CONTROL + Keys.HOME)
@@ -94,5 +89,5 @@ class SearchResultPage:
         return len(self.browser.find_elements(*self.results_of_searching))
 
     def got_to_product_page(self, item):
-        self.browser.find_element(By.CSS_SELECTOR, self.link_to_item_from_search_results[:-2] + item + self.link_to_item_from_search_results[-2:]).click()
+        self.browser.find_element(By.CSS_SELECTOR, self.link_to_item_from_search_results % item).click()
 
